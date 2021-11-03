@@ -1,0 +1,91 @@
+$background: #222;
+
+* {
+  border: 1px dotted black;
+}
+
+#calculator {
+  height: 600px;
+  width: 450px;
+  margin: auto;
+  border: 1px solid black;
+  background: $background;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  h2 {
+    padding: 0px;
+    margin: 3px 0px 0px 20px;
+  }
+  .line {
+    width: 100%;
+    border: 1px solid rgba(255,0,0,0.4);
+    margin-top: -45px;
+  }
+}
+
+#display {
+  height: 15%;
+  width: 90%;
+  margin: -40px auto 0px auto;
+  border: 10px solid black;
+  border-radius: 5px;
+  background: rgba(255,255,255,0.3);
+}
+
+#display-formula {
+  height: 35%;
+  width: 100%;
+}
+
+#display-current {
+  height: 65%;
+  width: 100%;
+}
+
+#solar-panel {
+  height: 30px;
+  width: 120px;
+  background: #555;
+  border: 1px solid black;
+  position: absolute;
+  right: 20px;
+  top: 15px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  .cell {
+    border: 1px dotted rgba(255,255,255,0.2);
+  }
+}
+
+#button-wrapper {
+  margin: auto;
+  height: 57%;
+  width: 90%;
+  background: white;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.number-button, .operation-button {
+  display: grid;
+  place-items: center;
+}
+
+.number-button {
+  border-radius: 6px;
+  margin: 2px;
+}
+
+.operation-button {
+  border-radius: 25px;
+  margin: 5px;
+}
+
+#power {
+  height: 50px;
+  width: 75px;
+  margin-left: 208px;
+}
