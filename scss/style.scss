@@ -61,9 +61,9 @@ $background: #222;
 }
 
 #button-wrapper {
-  margin: auto;
-  height: 57%;
-  width: 90%;
+  margin: 0px;
+  height: 65%;
+  width: 100%;
   background: white;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -84,8 +84,10 @@ $background: #222;
   margin: 5px;
 }
 
-#power {
-  height: 50px;
-  width: 75px;
-  margin-left: 208px;
+.wide-button {
+  grid-column-end: span 2;
+}
+
+.tall-button {
+  grid-row-end: span 2;
 }
