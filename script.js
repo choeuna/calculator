@@ -20,7 +20,7 @@ const Buttons = (props) => {
       <button value='1' onClick={props.numberPress} className='number-button' id='one'>1</button>
       <button value='2' onClick={props.numberPress} className='number-button' id='two'>2</button>
       <button value='3' onClick={props.numberPress} className='number-button' id='three'>3</button>
-      <button value='=' onClick={props.operationPress} className='operation-button tall-button' id='equal'>=</button>
+      <button value='=' onClick={props.evaluatePress} className='operation-button tall-button' id='equals'>=</button>
 
       <button value='0' onClick={props.numberPress} className='number-button wide-button' id='zero'>0</button>
       <button value='.' onClick={props.decimalPress} className='number-button' id='decimal'>.</button>
@@ -51,23 +51,32 @@ class App extends React.Component {
     this.state = {
       formulaText: '',
       displayText: '0',
-      currentVal: ''
+      currentVal: '',
+      evaluated: false
     };
     this.numberPress = this.numberPress.bind(this);
     this.decimalPress = this.decimalPress.bind(this);
     this.acPress = this.acPress.bind(this);
     this.operationPress = this.operationPress.bind(this);
+    this.evaluatePress = this.evaluatePress.bind(this);
   }
   
   numberPress(event) {
-    if (this.state.displayText === '0' && this.state.formulaText === '') {
-      // if first number used and not 0, update display and formula
+    if ((this.state.displayText === '0' && this.state.formulaText === '') || this.state.evaluated) {
+      // if pressing the first number and it is not a leading zero, update display and formula
       if (event.target.value !== '0') {
         this.setState({
           displayText: event.target.value,
           formulaText: event.target.value
         });
+      } else {
+        // else restart the display after an evaluation with a 0
+        this.setState({
+          displayText: '0',
+          formulaText: ''
+        });
       };
+      this.setState({evaluated: false});
     } else if (OPERATORS.includes(this.state.formulaText.charAt(this.state.formulaText.length-1))) {
       // if last value was an operator, update formula if it is non-zero
       if (event.target.value !== '0') {
@@ -80,7 +89,7 @@ class App extends React.Component {
         displayText: event.target.value
       });
     } else {
-      // adding to previous number, update display and formula
+      // it is a conitunation of a number, add to display and formula
       this.setState({
         displayText: this.state.displayText + event.target.value,
         formulaText: this.state.formulaText + event.target.value
@@ -89,12 +98,24 @@ class App extends React.Component {
   }
   
   decimalPress(event) {
-    if (!this.state.displayText.includes('.')) {
-      if (this.state.formulaText === '' || OPERATORS.includes(this.state.displayText)) {
-        this.setState({
-          displayText: '0' + event.target.value,
-          formulaText: this.state.formulaText + '0' + event.target.value
-        });
+    if (!this.state.displayText.includes('.') || this.state.evaluated) {
+      // if there is no decimal in current number or it is a new number
+      if (this.state.formulaText === '' || OPERATORS.includes(this.state.displayText) || this.state.evaluated) {
+        // if adding a decimal to nothing, set to 0.
+        console.log(this.state.evaluated);
+        if (this.state.evaluated) {
+          console.log("yes");
+          this.setState({
+            evaluated: false,
+            displayText: '0' + event.target.value,
+            formulaText: '0' + event.target.value
+          });
+        } else {
+          this.setState({
+            displayText: '0' + event.target.value,
+            formulaText: this.state.formulaText + '0' + event.target.value
+          });
+        }
       } else {
         this.setState({
           displayText: this.state.displayText + event.target.value,
@@ -112,10 +133,15 @@ class App extends React.Component {
   }
   
   operationPress(event) {
-    
-    if (isNaN(this.state.formulaText.charAt(this.state.formulaText.length-1))) {
+    if (this.state.evaluated) {
+      // if user wants to operate on answer of last calculation
       this.setState({
-        // if last character was an operator, replace formula char
+        evaluated: false,
+        formulaText: this.state.displayText + event.target.value
+      })
+    } else if (isNaN(this.state.formulaText.charAt(this.state.formulaText.length-1))) {
+      this.setState({
+        // if last character was an operator, replace formula character
         formulaText: this.state.formulaText.slice(0,this.state.formulaText.length - 1) + event.target.value
       });
     } else if (this.state.formulaText !== '') {
@@ -124,11 +150,30 @@ class App extends React.Component {
         formulaText: this.state.formulaText + event.target.value
       });
   };
-  // always update display
+  // always update display text
   this.setState({
     displayText: event.target.value
   });
 }
+  
+  evaluatePress(event) {
+    if (!this.state.evaluate) {
+      let formula = this.state.formulaText;
+      if (isNaN(formula.charAt(formula.length-1))) {
+        // if last character was not a number, remove last character
+        formula = formula.slice(0,this.state.formulaText.length - 1)
+      };
+      
+      formula = formula.replace(/x/g,'*');
+      let answer = eval(formula).toString();
+      
+      this.setState({
+        evaluated: true,
+        displayText: answer,
+        formulaText: formula.replace(/\*/g,'x') + '=' + answer
+      });
+    }
+  }
   
   render() {
     return (
@@ -150,6 +195,7 @@ class App extends React.Component {
           numberPress={this.numberPress}
           acPress={this.acPress}
           decimalPress={this.decimalPress}
+          evaluatePress={this.evaluatePress}
         />
       </div>
     )
