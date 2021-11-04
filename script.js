@@ -3,7 +3,7 @@ const OPERATORS = '/x+-';
 const Buttons = (props) => {
   return (
     <div id='button-wrapper'>
-      <button value='' onClick={props.operationPress} className='operation-button wide-button' id='clear'>AC</button>
+      <button onClick={props.acPress} className='operation-button wide-button' id='clear'>AC</button>
       <button value='/' onClick={props.operationPress} className='operation-button' id='divide'>/</button>
       <button value='x' onClick={props.operationPress} className='operation-button' id='multiply'>x</button>
       
@@ -55,6 +55,7 @@ class App extends React.Component {
     };
     this.numberPress = this.numberPress.bind(this);
     this.decimalPress = this.decimalPress.bind(this);
+    this.acPress = this.acPress.bind(this);
     this.operationPress = this.operationPress.bind(this);
   }
   
@@ -88,7 +89,26 @@ class App extends React.Component {
   }
   
   decimalPress(event) {
-    console.log('decimal press');
+    if (!this.state.displayText.includes('.')) {
+      if (this.state.formulaText === '' || OPERATORS.includes(this.state.displayText)) {
+        this.setState({
+          displayText: '0' + event.target.value,
+          formulaText: this.state.formulaText + '0' + event.target.value
+        });
+      } else {
+        this.setState({
+          displayText: this.state.displayText + event.target.value,
+          formulaText: this.state.formulaText + event.target.value
+        })
+      }
+    }
+  }
+  
+  acPress(event) {
+    this.setState({
+      formulaText:'',
+      displayText:'0'
+    });
   }
   
   operationPress(event) {
@@ -128,6 +148,7 @@ class App extends React.Component {
         <Buttons 
           operationPress={this.operationPress}
           numberPress={this.numberPress}
+          acPress={this.acPress}
           decimalPress={this.decimalPress}
         />
       </div>
