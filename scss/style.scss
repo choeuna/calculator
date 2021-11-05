@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Recursive&family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Recursive&family=Roboto:wght@300&family=VT323&display=swap');
 
 $font-family: sans-serif;
 $display-font-family: VT323, monospace;
@@ -28,8 +28,24 @@ $button-shadow: -3px -1px 3px black;
 
 body {
   font-family: $font-family;
-  background: rgba(206, 159, 137);
+  background: rgb(206, 159, 137);
 }
+
+p {
+  font-family: Roboto, $font-family;
+  display: grid;
+  place-items: center;
+  color: rgb(180, 101, 81);
+  a {
+    text-decoration: none;
+    color: #5A5353;
+    transition: all 0.5s linear;
+    &:hover {
+      color: #fff;
+    }
+  }
+}
+
 
 #calculator {
   background-image: linear-gradient(black, grey);
