@@ -178,7 +178,7 @@ class App extends React.Component {
   render() {
     return (
      <div id='calculator'>
-        <h2>Mathonator 3000</h2>
+        <h2>TI-01</h2>
         <div id='solar-panel'>
           <div className='cell'></div>
           <div className='cell'></div>
