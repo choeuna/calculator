@@ -31,7 +31,7 @@ const Buttons = (props) => {
 
 const Display = (props) => {
   return (
-  <div id='display-current'>
+  <div id='display'>
       {props.displayText}
   </div>
   )
@@ -125,11 +125,11 @@ class App extends React.Component {
   
   operationPress(event) {
     // default state is to add to formula, replace display
-    // eval     :  dis/ ''
-    // 0        :  r0 / ''
-    // #        :     / ''
-    // .        :  rl / ''
-    // operator :  rl / ''
+    // eval     :  set to display / ''
+    // 0        :  replace with 0 / ''
+    // #        :                 / ''
+    // .        :    replace last / ''
+    // operator :    replace last / ''
     
     // if value is -, allow after operator
     
@@ -142,7 +142,11 @@ class App extends React.Component {
       formula = '0';
     } else if (OPERATORS.includes(this.state.displayText)) {
       if (!(event.target.value === '-') || formula.charAt(formula.length-1) === '-') {
-        formula = formula.slice(0, formula.length-1);
+        if (OPERATORS.includes(formula.charAt(formula.length-2))) {
+          formula = formula.slice(0, formula.length-2);
+        } else {
+          formula = formula.slice(0, formula.length-1);
+        }
       }
     } else if (formula.charAt(formula.length-1) === '.') {
       formula = formula.slice(0, formula.length-1);
@@ -185,7 +189,7 @@ class App extends React.Component {
           <div className='cell'></div>
         </div>
         <div className='line'></div>
-        <div id='display'>
+        <div id='display-wrapper'>
           <Formula formulaText={this.state.formulaText}/>
           <Display displayText={this.state.displayText}/>
         </div>
