@@ -74,7 +74,7 @@ p {
   }
 }
 
-#display {
+#display-wrapper {
   @include inset-border(10px, #111);
   font-family: $display-font-family;
   border-radius: 4px;
@@ -88,18 +88,22 @@ p {
   height: 40%;
   width: 100%;
   font-size: 30px;
+  display: -webkit-flex;
   display: flex;
   align-items: center;
+  -webkit-justify-content: right;
   justify-content: right;
   overflow: hidden;
 }
 
-#display-current {
+#display {
   height: 60%;
   width: 100%;
   font-size: 47px;
+  display: -webkit-flex;
   display: flex;
   align-items: center;
+  -webkit-justify-content: right;
   justify-content: right;
   overflow: hidden;
 }
