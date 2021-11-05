@@ -62,67 +62,58 @@ class App extends React.Component {
   }
   
   numberPress(event) {
-    if ((this.state.displayText === '0' && this.state.formulaText === '') || this.state.evaluated) {
-      // if pressing the first number and it is not a leading zero, update display and formula
-      if (event.target.value !== '0') {
-        this.setState({
-          displayText: event.target.value,
-          formulaText: event.target.value
-        });
-      } else {
-        // else restart the display after an evaluation with a 0
-        this.setState({
-          displayText: '0',
-          formulaText: ''
-        });
-      };
+    // default state is keep formula, replace display, add value to both
+    //
+    // if evaluated                              '' / 
+    // else if leading 0      rem last formula char / 
+    // else if digit/deci                           / keep old display
+    // then add value to both texts
+    
+    let formula = this.state.formulaText;
+    let displayOld = this.state.displayText;
+    let display = '';
+    
+    if (this.state.evaluated) {
       this.setState({evaluated: false});
-    } else if (OPERATORS.includes(this.state.formulaText.charAt(this.state.formulaText.length-1))) {
-      // if last value was an operator, update formula if it is non-zero
-      if (event.target.value !== '0') {
-        this.setState({
-          formulaText: this.state.formulaText + event.target.value
-        });
-      };
-      // update display regardless of value
-      this.setState({
-        displayText: event.target.value
-      });
-    } else {
-      // it is a conitunation of a number, add to display and formula
-      this.setState({
-        displayText: this.state.displayText + event.target.value,
-        formulaText: this.state.formulaText + event.target.value
-      });
+      formula = '';
+    } else if (displayOld === '0') {
+      formula = formula.slice(0, formula.length - 1);
+    } else if ((/(\d|\.)/).test(formula.charAt(formula.length-1))) {
+      display = displayOld;
     };
+    
+    this.setState({
+      formulaText: formula + event.target.value,
+      displayText: display + event.target.value
+    });
   }
   
   decimalPress(event) {
-    if (!this.state.displayText.includes('.') || this.state.evaluated) {
-      // if there is no decimal in current number or it is a new number
-      if (this.state.formulaText === '' || OPERATORS.includes(this.state.displayText) || this.state.evaluated) {
-        // if adding a decimal to nothing, set to 0.
-        console.log(this.state.evaluated);
-        if (this.state.evaluated) {
-          console.log("yes");
-          this.setState({
-            evaluated: false,
-            displayText: '0' + event.target.value,
-            formulaText: '0' + event.target.value
-          });
-        } else {
-          this.setState({
-            displayText: '0' + event.target.value,
-            formulaText: this.state.formulaText + '0' + event.target.value
-          });
-        }
-      } else {
-        this.setState({
-          displayText: this.state.displayText + event.target.value,
-          formulaText: this.state.formulaText + event.target.value
-        })
+    // default state is to add decimal
+    // if no decimals yet or evaluated
+    //    evaluated :       replace 0. / replace 0.
+    //    formula '':           add 0. /     add  .
+    //    operator  :           add 0. / replace 0.
+    //    else      :           add  . /     add  .
+    
+    let formula = this.state.formulaText;
+    let display = this.state.displayText;
+    
+    if (!display.includes('.') || this.state.evaluated) {
+      if (this.state.evaluated) {
+        this.setState({evaluated: false});
+        formula = '0';
+        display = '0';
+      } else if (OPERATORS.includes(display) || formula === '') {
+        formula += '0';
+        display = '0';
       }
-    }
+      
+      this.setState({
+        formulaText: formula + '.',
+        displayText: display + '.'
+      });
+    };
   }
   
   acPress(event) {
@@ -133,28 +124,35 @@ class App extends React.Component {
   }
   
   operationPress(event) {
+    // default state is to add to formula, replace display
+    // eval     :  dis/ ''
+    // 0        :  r0 / ''
+    // #        :     / ''
+    // .        :  rl / ''
+    // operator :  rl / ''
+    
+    // if value is -, allow after operator
+    
+    let formula = this.state.formulaText;
+    
     if (this.state.evaluated) {
-      // if user wants to operate on answer of last calculation
-      this.setState({
-        evaluated: false,
-        formulaText: this.state.displayText + event.target.value
-      })
-    } else if (isNaN(this.state.formulaText.charAt(this.state.formulaText.length-1))) {
-      this.setState({
-        // if last character was an operator, replace formula character
-        formulaText: this.state.formulaText.slice(0,this.state.formulaText.length - 1) + event.target.value
-      });
-    } else if (this.state.formulaText !== '') {
-      // else if not the first character, add to formula
-      this.setState({
-        formulaText: this.state.formulaText + event.target.value
-      });
-  };
-  // always update display text
-  this.setState({
-    displayText: event.target.value
-  });
-}
+      this.setState({evaluated: false});
+      formula = this.state.displayText;  
+    } else if (this.state.displayText === '0') {
+      formula = '0';
+    } else if (OPERATORS.includes(this.state.displayText)) {
+      if (!(event.target.value === '-') || formula.charAt(formula.length-1) === '-') {
+        formula = formula.slice(0, formula.length-1);
+      }
+    } else if (formula.charAt(formula.length-1) === '.') {
+      formula = formula.slice(0, formula.length-1);
+    }
+    
+    this.setState({
+      formulaText: formula + event.target.value,
+      displayText: event.target.value
+    });
+  }
   
   evaluatePress(event) {
     if (!this.state.evaluate) {
@@ -165,6 +163,7 @@ class App extends React.Component {
       };
       
       formula = formula.replace(/x/g,'*');
+      if (formula === '') {formula = '0'};
       let answer = eval(formula).toString();
       
       this.setState({
